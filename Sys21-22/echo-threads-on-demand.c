@@ -9,6 +9,9 @@
 #include <signal.h>
 #include <pthread.h>
 
+#define PORT 48666
+#define MAX_LINE 80
+
 struct conn
 {
     char *client_ip;
