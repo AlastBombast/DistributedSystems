@@ -114,8 +114,9 @@ void closeCommand(int socket)
 	}
 }
 
-void *EchoService(connection_data *conn)
+void *EchoService(void *con)
 {
+	connection_data *conn = (connection_data *) con;
 	int bytes_received;
 	char buffer[MAX_LINE];
 
