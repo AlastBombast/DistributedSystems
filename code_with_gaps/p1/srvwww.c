@@ -282,7 +282,7 @@ void *Worker(int *id)
         // TODO: TO BE COMPLETED BY STUDENT
         
 		
-		printf("%s\n", req->msg);
+		
 		token = strtok_r(req->msg, " \n\r", &loc);
 		
         
@@ -356,6 +356,7 @@ void *Worker(int *id)
 				send_file(filepath, req->s);
 			}
 			
+			continue;
             
             
         }
@@ -517,8 +518,7 @@ void ReceiveRequests(int sockTCP, int sockUDP)
             
 
             // Receive the message
-            received = recvStringTCP(s, bufferTCP, sizeof(char)*18);
-		printf("%d\n", received);
+            received = recvStringTCP(s, bufferTCP, sizeof(bufferTCP));
 		if (received == 0) {
 		continue;
 		}
@@ -540,7 +540,7 @@ void ReceiveRequests(int sockTCP, int sockUDP)
 				p->client_addr = client_addr;
 				p->s = s;
 				p->is_stream = TRUE;
-				printf("bufferTCP:%s + Received:%d\n", bufferTCP,received);
+				
 				strcpy(p->msg, bufferTCP);
 				
 				enqueue(&request_queue, p);

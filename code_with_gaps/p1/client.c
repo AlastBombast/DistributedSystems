@@ -174,7 +174,6 @@ char * send_request(char *request, struct sockaddr_in *server_addr, int is_strea
 		}
 
 		sent = sendStringTCP(sock_dat, request, strlen(request));
-		printf("%d", sent);
 
 		if (sent < 0) {
 			print_log("Could NOT send request to server.");
