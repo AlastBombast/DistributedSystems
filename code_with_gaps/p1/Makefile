@@ -6,10 +6,10 @@ OBJ = srvwww.o queue.o client.o util.o protocol.o
 all: srvwww client
 
 srvwww: srvwww.c $(DEPS)
-    $(CC) -o $@ $^ $(CFLAGS)
+	$(CC) -o $@ $^ $(CFLAGS)
 
 client: client.c util.c util.h protocol.c protocol.h
-    $(CC) -o $@ $^ $(CFLAGS)
+	$(CC) -o $@ $^ $(CFLAGS)
 
 clean:
-    rm *.o
+	rm *.o

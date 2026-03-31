@@ -110,7 +110,7 @@ void process_arguments(int argc, char *argv[])
     // Validate and store the queue size parameter
     // TODO: TO BE COMPLETED BY STUDENT
     
-    ...
+    
     
     if  (!validate_number(argv[2])) {
     	fprintf(stderr, "Queue size given is NOT a number.");
@@ -124,12 +124,12 @@ void process_arguments(int argc, char *argv[])
     	exit(4);
 	}
 	
-    ...
+    
 
     // Validate and store the number of worker threads
     // TODO: TO BE COMPLETED BY STUDENT
     
-	...
+	
 	
 	if (!validate_number(argv[3])) {
 		fprintf(stderr, "Number of threads given is NOT a number.");
@@ -143,7 +143,7 @@ void process_arguments(int argc, char *argv[])
 		exit(6);
 	} 
 	
-    ...
+    
 
     documentroot = strdup(argv[4]);
     if (documentroot == NULL)
@@ -281,11 +281,11 @@ void *Worker(int *id)
         loc = NULL;
         // TODO: TO BE COMPLETED BY STUDENT
         
-		...
 		
+		printf("%s\n", req->msg);
 		token = strtok_r(req->msg, " \n\r", &loc);
 		
-        ...
+        
 
         if (token == NULL)
         {
@@ -317,7 +317,7 @@ void *Worker(int *id)
             // Check if file exists and prepare response message
             // TODO: TO BE COMPLETED BY STUDENT
             
-			...
+			
 			
 			if (file_exists(filepath)){
 				strcpy(msg, "200");
@@ -327,7 +327,7 @@ void *Worker(int *id)
 				strcpy(msg, "404");
 			}
 			
-            ...
+            
             
         }
         else if (strcmp(cmd, "GETSIZE") == 0)
@@ -335,7 +335,7 @@ void *Worker(int *id)
             // Obtain file size and prepare response message
             // TODO: TO BE COMPLETED BY STUDENT
             
-			...
+			
 			
 			long number = get_file_size(filepath);
 			
@@ -343,27 +343,27 @@ void *Worker(int *id)
 				sprintf(msg, "%ld", number);
 			}
 			
-            ...
+            
             
         }
         else if (strcmp(cmd, "GETFILE") == 0)
         {
             // TODO: TO BE COMPLETED BY STUDENT
             
-			...
+			
 			
 			if (file_exists(filepath)) {
 				send_file(filepath, req->s);
 			}
 			
-            ...
+            
             
         }
         else if (strcmp(cmd, "GETCHUNK") == 0) 
 		{
             // TODO: TO BE COMPLETED BY STUDENT
             
-			...
+			
 			
 			token = strtok_r(NULL, " \n\r", &loc);
 			
@@ -419,7 +419,7 @@ void *Worker(int *id)
 			
 			free(aux);
             
-			...
+			
             
         }
 
@@ -432,13 +432,13 @@ void *Worker(int *id)
             // (which frees a descriptor for the semaphore)
             // TODO: TO BE COMPLETED BY STUDENT
             
-			...
+			
 			
 			sendStringTCP(req->s, msg, strlen(msg));
 			CloseSocket(req->s);
 			sem_post(&semdesc);
 			
-            ...
+            
             
         }
         else // request via UDP
@@ -447,11 +447,11 @@ void *Worker(int *id)
             // because it will be reused for other UDP clients
             // TODO: TO BE COMPLETED BY STUDENT
             
-			...
+			
 			
 			sendStringUDP(req->s, msg, strlen(msg), &req->client_addr);
 			
-            ...
+            
             
         }
 
@@ -485,7 +485,7 @@ void ReceiveRequests(int sockTCP, int sockUDP)
         // Prepare fds and call select
         // TODO: TO BE COMPLETED BY STUDENT
         
-		...
+		
 		
 		FD_ZERO(&fds);
 		FD_SET(sockTCP, &fds);
@@ -493,7 +493,7 @@ void ReceiveRequests(int sockTCP, int sockUDP)
 		
 		select(maximum + 1, &fds, NULL, NULL, NULL);
 		
-        ...
+        
 
         // Check if there are clients on the TCP socket
         if (FD_ISSET(sockTCP, &fds))
@@ -504,7 +504,7 @@ void ReceiveRequests(int sockTCP, int sockUDP)
             // so we must account for it in the appropriate semaphore
             // TODO: TO BE COMPLETED BY STUDENT
             
-			...
+			
 			
 			sem_wait(&semdesc);
 			s = AcceptConnection(sockTCP);
@@ -514,11 +514,14 @@ void ReceiveRequests(int sockTCP, int sockUDP)
 				continue;
 			}
 			
-            ...
+            
 
             // Receive the message
-            received = recvStringTCP(s, bufferTCP, sizeof(bufferTCP));
-
+            received = recvStringTCP(s, bufferTCP, sizeof(char)*18);
+		printf("%d\n", received);
+		if (received == 0) {
+		continue;
+		}
             // Create a queue_item structure
             p = (queue_item *)malloc(sizeof(queue_item));
             if (p == NULL)
@@ -532,17 +535,17 @@ void ReceiveRequests(int sockTCP, int sockUDP)
                 // and insert it into the queue
                 // TODO: TO BE COMPLETED BY STUDENT
                 
-				...
+				
 				
 				p->client_addr = client_addr;
 				p->s = s;
 				p->is_stream = TRUE;
-				
+				printf("bufferTCP:%s + Received:%d\n", bufferTCP,received);
 				strcpy(p->msg, bufferTCP);
 				
 				enqueue(&request_queue, p);
 				
-                ...
+                
                 
             }
         }
@@ -570,7 +573,7 @@ void ReceiveRequests(int sockTCP, int sockUDP)
                 // and insert it into the queue
                 // TODO: TO BE COMPLETED BY STUDENT
                 
-				...
+				
 				
 				p->client_addr = client_addr;
 				p->s = sockUDP;
@@ -580,7 +583,7 @@ void ReceiveRequests(int sockTCP, int sockUDP)
 				
 				enqueue(&request_queue, p);
 				
-                ...
+                
                 
             }
         }
@@ -609,12 +612,12 @@ int main(int argc, char *argv[])
     // Initialize TCP and UDP sockets
     // TODO: TO BE COMPLETED BY STUDENT
     
-	...
+	
 	
 	sock_passive_TCP = CreateTCPServerSocket(port);
 	sock_UDP = CreateUDPDataSocket();
 	
-    ...
+    
 
     // Initialize the queue
     init_queue(&request_queue, queue_size);
@@ -629,11 +632,11 @@ int main(int argc, char *argv[])
     // the passive TCP socket, and the UDP socket.
     // TODO: TO BE COMPLETED BY STUDENT
     
-	...
+	
 	
 	sem_init(&semdesc, 0, (sysconf(_SC_OPEN_MAX) / 2) - 5);
 	
-    ...
+    
 
     // Reserve memory for the array of worker thread handles (global variable)
     worker_threads = (pthread_t *)malloc(sizeof(pthread_t) * num_worker_threads);
@@ -649,14 +652,14 @@ int main(int argc, char *argv[])
     {
         // TODO: TO BE COMPLETED BY STUDENT
         
-		...
+		
 		
 		id = (int*)malloc(sizeof(int));
 		*id = i;
 		
 		pthread_create(&worker_threads[i], NULL, (void*(*)(void*))Worker, id);
         
-		...
+		
         
     }
 

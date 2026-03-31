@@ -21,7 +21,7 @@ void init_queue(Queue *queue, int queue_size)
     }
     // TODO: TO BE COMPLETED BY STUDENT
     
-    ...
+    
     
     queue->items = calloc(queue_size, sizeof(queue_item*));
     
@@ -36,7 +36,7 @@ void init_queue(Queue *queue, int queue_size)
     sem_init(&queue->num_slots, 0, queue_size);
     sem_init(&queue->num_used, 0, 0);
     
-    ...
+    
     
 }
 
@@ -48,7 +48,7 @@ void free_queue(Queue *queue)
 
     // TODO: TO BE COMPLETED BY STUDENT
     
-	...
+	
 	
 	for (int i = 0; i < queue->queue_size; i++) {
 		
@@ -64,7 +64,7 @@ void free_queue(Queue *queue)
 	sem_destroy(&queue->num_slots);
 	sem_destroy(&queue->num_used);
 	
-    ...
+    
     
 }
 
@@ -73,18 +73,18 @@ void enqueue(Queue *queue, queue_item *item)
     // copy the pointer directly into the appropriate position in the queue
     // TODO: TO BE COMPLETED BY STUDENT
     
-    ...
+    
     
     sem_wait(&queue->num_slots);
-    pthread_mutex_lock(&queue->mutex_tail);
+    pthread_mutex_lock(&queue->mutex_head);
     
-    queue->items[queue->tail] = item;
-    queue->tail = (queue->tail + 1) % queue->queue_size;
+    queue->items[queue->head] = item;
+    queue->head = (queue->head + 1) % queue->queue_size;
     
-    pthread_mutex_unlock(&queue->mutex_tail);
+    pthread_mutex_unlock(&queue->mutex_head);
     sem_post(&queue->num_used);
     
-    ...
+    
     
 }
 
@@ -94,20 +94,20 @@ queue_item *dequeue(Queue *queue)
 
     // TODO: TO BE COMPLETED BY STUDENT
     
-    ...
+    
     
     sem_wait(&queue->num_used);
-    pthread_mutex_lock(&queue->mutex_head);
+    pthread_mutex_lock(&queue->mutex_tail);
     
-    p = queue->items[queue->head];
-    queue->items[queue->head] = NULL;
-    queue->head = (queue->head + 1) % queue->queue_size;
+    p = queue->items[queue->tail];
+    queue->items[queue->tail] = NULL;
+    queue->tail = (queue->tail + 1) % queue->queue_size;
     
-    pthread_mutex_unlock(&queue->mutex_head);
+    pthread_mutex_unlock(&queue->mutex_tail);
     sem_post(&queue->num_slots);
     
     return p;
     
-    ...
+    
     
 }

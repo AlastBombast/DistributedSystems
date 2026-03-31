@@ -57,13 +57,9 @@ void download_file(int client_id, CLIENT *cl, char *filename, int max_chunk_size
     int fd_out;     // Output file descriptor where the file will be stored
 
     // TODO: TO BE COMPLETED BY STUDENT
-    
-    ...
         
     res = existfile_1(&filename, cl);
     int file = (res->case_id == 0 && res->Result_u.b == 1);
-    
-    ...
     
     if (file)   // TODO: TO BE COMPLETED BY STUDENT
     {
@@ -71,11 +67,11 @@ void download_file(int client_id, CLIENT *cl, char *filename, int max_chunk_size
         fprintf(stderr, "Client: %d File %s exists on the server.\n", client_id, filename);
         // TODO: TO BE COMPLETED BY STUDENT
         
-        ...
+        
         
         res = getsize_1(&filename, cl);
         
-        ...
+        
 
         if (res->case_id == 1 && res->Result_u.val >= 0)
         {
@@ -289,11 +285,11 @@ void *process_downloads(thread_data *p)
                     client_id, filename);
             // TODO: TO BE COMPLETED BY STUDENT
             
-            ...
+            
             
             cl = clnt_create(ip_srv,SRVWWW,FIRST,"tcp");
             
-            ...
+            
             
         }
         else if (strcmp(token, "U") == 0)
@@ -302,11 +298,11 @@ void *process_downloads(thread_data *p)
                     client_id, filename);
             // TODO: TO BE COMPLETED BY STUDENT
             
-            ...
+            
             
             cl = clnt_create(ip_srv,SRVWWW,FIRST,"udp");
             
-            ...
+            
             
         }
         else // Unknown protocol
@@ -330,11 +326,11 @@ void *process_downloads(thread_data *p)
         // First check whether the file exists
         // TODO: TO BE COMPLETED BY STUDENT
         
-        ...
+        
         
         download_file(client_id, cl, filename, max_chunk_size);
         
-        ...
+        
 
         process_tags(client_id, cl, filename, max_chunk_size);
 
@@ -422,23 +418,22 @@ int main(int argc, char *argv[])
     // from making the same RPC simultaneously
     // TODO: TO BE COMPLETED BY STUDENT
     
-    ...
     
-    pthread_mutex_t m_rpc_result;
-    pthread_mutex_init(&m_rpc_result, NULL);
     
-    ...
+    pthread_mutex_t m;
+    pthread_mutex_init(&m, NULL);
+    
+    
 
     // Another mutex is needed to prevent two threads from reading
     // the request file at the same time
     // TODO: TO BE COMPLETED BY STUDENT
     
-    ...
     
-    pthread_mutex_t m_req;
-    pthread_mutex_init(&m_req, NULL);
     
-    ...
+    pthread_mutex_init(&mpet, NULL);
+    
+    
 
     // Allocate space for the dynamic array of thread references
     th = (pthread_t *)malloc(sizeof(pthread_t) * num_clients);
@@ -451,7 +446,7 @@ int main(int argc, char *argv[])
     // Launch threads
     // TODO: TO BE COMPLETED BY STUDENT
     
-    ...
+    
     
     for(i=0; i < num_clients; i++) {
     	q = (thread_data*)malloc(sizeof(thread_data));
@@ -460,12 +455,12 @@ int main(int argc, char *argv[])
     	pthread_create(&th[i],NULL,(void *)process_downloads, q);	
 	}
     
-    ...
+    
 
     // Wait for all threads to finish
     // TODO: TO BE COMPLETED BY STUDENT
     
-    ...
+    
     
      for(i=0; i < num_clients; i++) {
     	
@@ -473,7 +468,7 @@ int main(int argc, char *argv[])
     	
 	}
     
-    ...
+    
 
     fclose(fp);
     exit(0);

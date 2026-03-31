@@ -127,13 +127,13 @@ int Connect(int sock, char *ip, int port)
     // Initialize server_addr
     // TODO: TO BE COMPLETED BY STUDENT
     
-	...
+	
 	
 	server_addr.sin_family = AF_INET;
 	inet_aton(ip, &server_addr.sin_addr);
 	server_addr.sin_port = htons(port);
 	
-    ...
+    
 
     result = connect(sock, (struct sockaddr *)&server_addr, sizeof(server_addr));
     if (result == -1)
@@ -178,13 +178,13 @@ int recvStringTCP(int s, char *str, int len)
     {
         // TODO: TO BE COMPLETED BY STUDENT
         
-		...
+		
 		
 		if (received < len) {
 			str[received] = '\0';
 		}
 		
-        ...
+        
         
     }
     return received;
@@ -204,13 +204,13 @@ int recvStringUDP(int s, char *str, int len, struct sockaddr_in *addr)
     {
         // TODO: TO BE COMPLETED BY STUDENT
         
-		...
+		
 		
 		if (received < len) {
 			str[received] = '\0';
 		}
 		
-        ...
+        
         
     }
     return received;

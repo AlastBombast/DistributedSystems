@@ -53,9 +53,9 @@ Result *existfile_1_svc(filename_string *fname, struct svc_req *request)
     // and return the appropriate result in res
     // TODO: TO BE COMPLETED BY STUDENT
     
-    ...
     
-    snprintf(filename, DIR_SIZE, "%s%s", documentroot, fname);
+    
+    snprintf(filename, DIR_SIZE, "%s/%s", documentroot, *fname);
     
     if(stat(filename, &buf) != 0) {
     	res.case_id = 0;
@@ -66,7 +66,7 @@ Result *existfile_1_svc(filename_string *fname, struct svc_req *request)
 		res.Result_u.b = 1;
 	}
 	
-    ...
+    
 
     return (&res);
 }
@@ -81,9 +81,9 @@ Result *getsize_1_svc(filename_string *fname, struct svc_req *request)
     // returning the appropriate result in res
     // TODO: TO BE COMPLETED BY STUDENT
     
-    ...
     
-    snprintf(filename, DIR_SIZE, "%s%s", documentroot, fname);
+    
+    snprintf(filename, DIR_SIZE, "%s/%s", documentroot, *fname);
 	
     size = (long) get_file_size(filename);
     
@@ -96,7 +96,7 @@ Result *getsize_1_svc(filename_string *fname, struct svc_req *request)
     	res.Result_u.val = size;
 	}
 	
-    ...
+    return (&res);
     
 }
 
@@ -106,13 +106,13 @@ void error_and_close_file(char *msg, int fd, Result *res)
     // with an error message, and closes file descriptor fd
     // TODO: TO BE COMPLETED BY STUDENT
     
-    ...
+    
     
     close(fd);
     res->case_id = 3;
     res->Result_u.err = msg;
     
-    ...
+    
     
 }
 
@@ -156,7 +156,7 @@ Result *getchunk_1_svc(param1 *fileitem, struct svc_req *request)
     // Basic checks: offset and remaining cannot be negative
     // TODO: TO BE COMPLETED BY STUDENT
     
-    ...
+    
     
     if (offset < 0 || remaining < 0) {
     	
@@ -165,7 +165,7 @@ Result *getchunk_1_svc(param1 *fileitem, struct svc_req *request)
         
 	}
 
-    ...
+    
 
     if (lseek(fd, offset, SEEK_SET) < 0)
     {
@@ -219,11 +219,11 @@ Result *getchunk_1_svc(param1 *fileitem, struct svc_req *request)
             // Allocate memory for the chunk
             // TODO: TO BE COMPLETED BY STUDENT
             
-            ...
+            
             
             first->chunk_data.chunk_val = (char*)malloc(read_bytes);
             
-            ...
+            
 
             if (first->chunk_data.chunk_val == NULL)
             {
@@ -251,11 +251,11 @@ Result *getchunk_1_svc(param1 *fileitem, struct svc_req *request)
             // Allocate memory for the chunk
             // TODO: TO BE COMPLETED BY STUDENT
             
-            ...
+            
             
             aux->chunk_data.chunk_val = (char*)malloc(read_bytes);
             
-            ...
+            
 
             if (aux->chunk_data.chunk_val == NULL)
             {
@@ -293,12 +293,12 @@ Result *getchunk_1_svc(param1 *fileitem, struct svc_req *request)
 
     // TODO: TO BE COMPLETED BY STUDENT
     
-    ...
+    
     
     res.case_id = 2;
     res.Result_u.list = first;
     
-    ...
+    
 
     return (&res);
 }
