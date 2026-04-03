@@ -236,7 +236,7 @@ void download_multimedia(struct sockaddr_in *p, char *filename)
         specified in the parameter 'filename'. The images will be downloaded
         using the UDP protocol in chunks of maximum size 'chunk_max_size'.
     */
-
+    int chunk_size = chunk_max_size;
     FILE *fp_in;             // to read the input file
     int fd_out;              // to write to the output file
     char line[LINE_SIZE];    // to store each line read from the file
@@ -301,18 +301,18 @@ void download_multimedia(struct sockaddr_in *p, char *filename)
                             while (offset < file_size)
                             {
                                 // Prepare request to obtain the chunk and send it
-                                if ((offset + chunk_max_size) > file_size)
-                                    chunk_max_size = file_size - offset; // adjust chunk size at end of file
+                                if ((offset + chunk_size) > file_size)
+                                    chunk_size = file_size - offset; // adjust chunk size at end of file
 
-                                sprintf(request, "GETCHUNK %s %ld %d", token, offset, chunk_max_size);
+                                sprintf(request, "GETCHUNK %s %ld %d", token, offset, chunk_size);
                                 s = send_request(request, p, FALSE);
 
                                 if (s != NULL)
                                 {
                                     // Write the received chunk to the file
-                                    write(fd_out, s, chunk_max_size);
+                                    write(fd_out, s, chunk_size);
                                     free(s);
-                                    offset += chunk_max_size; // increment offset
+                                    offset += chunk_size; // increment offset
                                 }
                                 else // error obtaining chunk
                                 {
