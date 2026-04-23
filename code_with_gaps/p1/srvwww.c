@@ -351,12 +351,8 @@ void *Worker(int *id)
             // TODO: TO BE COMPLETED BY STUDENT
             
 			
-			
-			if (file_exists(filepath)) {
 				send_file(filepath, req->s);
-			}
 			
-			continue;
             
             
         }

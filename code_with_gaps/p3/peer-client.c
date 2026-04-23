@@ -139,6 +139,8 @@ int main(int argc, char *argv[]) {
 			}
 			else {
 				SendByte(tcp_socket, PONG_CMD);
+				SendShort(tcp_socket,strlen(nick));
+				SendString(tcp_socket,nick);
 				log_pong_sent(nick);
 				Close(tcp_socket);
 			}
@@ -151,6 +153,7 @@ int main(int argc, char *argv[]) {
 
         if (FD_ISSET(keyboard, &listen)) {
             read_and_process_keyboard(udp_socket, ip, port);
+	    printf("%s>", nick);
         }
     }
 }
