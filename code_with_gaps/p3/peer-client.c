@@ -94,7 +94,7 @@ int main(int argc, char *argv[]) {
     SendByte(tcp_socket, JOIN_CMD);
     SendShort(tcp_socket, strlen(nick));
     SendString(tcp_socket, nick);
-    SendEndpoint(tcp_socket, &udp_addr);
+    SendShort(tcp_socket, peer_port);
 
     // Read JOIN respone
     short int res = ReadByte(tcp_socket);
@@ -107,10 +107,12 @@ int main(int argc, char *argv[]) {
         Close(tcp_socket);
     }
 
+    
+    printf("%s>", nick);
+
     // And we enter the waiting loop
     while (1) {
         // Print a prompt to invite to write
-        printf("%s>", nick);
         fflush(stdout); // To get it out now, since it doesn't end with \n
 
         // TODO
@@ -132,7 +134,6 @@ int main(int argc, char *argv[]) {
         select(max + 1, &listen, NULL, NULL, &pong_interval);
 		
 		//ADDED
-		if (!FD_ISSET(udp_socket, &listen) && !FD_ISSET(keyboard, &listen)) {
 			int res = connect_to_server(ip, port);
 			if (res == -1){
 				perror("Error when connecting to server.");
@@ -143,7 +144,7 @@ int main(int argc, char *argv[]) {
 				SendString(tcp_socket,nick);
 				log_pong_sent(nick);
 				Close(tcp_socket);
-			}
+			
 		}
 		
         // When exiting, something has happened
@@ -220,8 +221,6 @@ void read_and_process_keyboard(int udp_socket, char *ip, int port) {
         else
             break;
     }
-    // Get a new prompt
-    printf("%s>", nick);
 
     // See if it's a command
     if (line[0] == '/') {
@@ -311,8 +310,6 @@ void read_and_process_keyboard(int udp_socket, char *ip, int port) {
                (struct sockaddr *)&target_dir, sizeof(target_dir));
         free(message_to_send);
     }
-
-    Close(tcp_socket);
 }
 
 int get_max(int a, int b) {
