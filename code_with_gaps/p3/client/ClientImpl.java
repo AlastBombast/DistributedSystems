@@ -26,19 +26,18 @@ public class ClientImpl extends UnicastRemoteObject implements ClientInterface {
 
     public ClientImpl() throws RemoteException {
         super();
-        // The queue through which the threads executing the methods of this class
-        // communicate
+        // The queue through which the threads executing the methods of this class communicate
         queue = new ArrayBlockingQueue<Object>(1); // A size of 1 is sufficient
     }
 
     @Override
     public void setExistFile(Boolean answer) throws RemoteException {
         // This method is invoked via RMI from the WWW server
-        // It receives the response to the query and simply saves it in the internal
-        // queue
+        // It receives the response to the query and simply saves it in the internal queue
         try {
             // TODO
-            queue.put((Boolean) answer);
+
+		queue.put((Boolean) answer);
 
         } catch (InterruptedException e) {
             e.printStackTrace();
@@ -48,11 +47,11 @@ public class ClientImpl extends UnicastRemoteObject implements ClientInterface {
     @Override
     public void setGetSize(Long val) throws RemoteException {
         // This method is invoked via RMI from the WWW server
-        // It receives the response to the query and simply saves it in the internal
-        // queue
+        // It receives the response to the query and simply saves it in the internal queue
         try {
             // TODO
-            queue.put((Long) val);
+
+		queue.put((Long) val);
 
         } catch (InterruptedException e) {
             e.printStackTrace();
@@ -62,36 +61,43 @@ public class ClientImpl extends UnicastRemoteObject implements ClientInterface {
     @Override
     public void setGetChunk(byte[] chunk) throws RemoteException {
         // This method is invoked via RMI from the WWW server
-        // It receives the response to the query and simply saves it in the internal
-        // queue
+        // It receives the response to the query and simply saves it in the internal queue
         try {
             // TODO
-            queue.put((byte[]) chunk);
+
+		queue.put((byte[]) chunk);
 
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
     }
 
+
     public Boolean getExistFile() throws InterruptedException {
         // This method is invoked from the client (processDownloads method)
         // It waits for the response to the last query to appear and returns its value
         // TODO
-        return (Boolean) queue.take();
+
+	    return (Boolean) queue.take();
     }
+
 
     public Long getSize() throws InterruptedException {
         // This method is invoked from the client (processDownloads method)
         // It waits for the response to the last query to appear and returns its value
         // TODO
-        return (Long) queue.take();
-    }
+
+	    return (Long) queue.take();
+
+    }    
 
     public byte[] getChunk() throws InterruptedException {
         // This method is invoked from the client (processDownloads method)
         // It waits for the response to the last query to appear and returns its value
         // TODO
-        return (byte[]) queue.take();
-    }
+
+	    return (byte[]) queue.take();
+
+    }    
 
 }

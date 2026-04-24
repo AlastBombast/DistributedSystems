@@ -8,9 +8,11 @@ Remote interface of the Client that must make the setXXXXXXX() methods public so
 */
 public interface ClientInterface extends Remote {
     // TODO
-    public void setExistFile(Boolean answer) throws java.rmi.RemoteException;
 
-    public void setGetSize(Long val) throws java.rmi.RemoteException;
+	public void setExistFile(Boolean answer) throws java.rmi.RemoteException;
 
-    public void setGetChunk(byte[] chunk) throws java.rmi.RemoteException;
+	public void setGetSize(Long val) throws java.rmi.RemoteException;
+
+	public void setGetChunk(byte[] chunk) throws java.rmi.RemoteException;
+
 }

@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.ListIterator;
 import java.util.Queue;
+
 // Blocking queue to communicate between the QueryReceiver thread and Worker threads
 import java.util.concurrent.ArrayBlockingQueue;
 
@@ -46,8 +47,8 @@ import client.ClientInterface;
 // QueryReceiver Class. Receives messages via RabbitMQ and puts them into the blocking 
 // event queue to be processed by the Worker threads.
 class QueryReceiver extends Thread {
-    private final static String RABBIT_QUEUE_NAME = "JR"; // TODO (change queue name)
-    private ArrayBlockingQueue<String> qrequest; // Blocking queue to communicate with workers
+    private final static String RABBIT_QUEUE_NAME = "FR"; // TODO (change queue name)
+    private ArrayBlockingQueue<String> qrequest;  // Blocking queue to communicate with workers
 
     // The constructor receives a reference to the blocking queue
     // which allows communication with the Worker threads.
@@ -62,9 +63,12 @@ class QueryReceiver extends Thread {
         try {
             // Connect to RabbitMQ
             // TODO
-            Connection connection = factory.newConnection();
-            Channel channel = connection.createChannel();
-            channel.queueDeclare(RABBIT_QUEUE_NAME, false, false, false, null);
+
+		Connection connection = factory.newConnection();
+
+		Channel channel = connection.createChannel();
+
+		channel.queueDeclare(RABBIT_QUEUE_NAME, false, false, false, null);
 
             // Wait for requests in the RabbitMQ queue
             Consumer consumer = new DefaultConsumer(channel) {
@@ -81,18 +85,21 @@ class QueryReceiver extends Thread {
                     System.out.println("QueryReceiver: Received query = " + msg);
 
                     // TODO
-                    try {
-                        qrequest.put(msg);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                    System.out.println("QueryReceiver: Put request to queue");
+
+		    try {
+			    qrequest.put(msg);
+		    }
+		    catch (InterruptedException e) {
+			    e.printStackTrace();
+		    }
+		    System.out.println("QueryReceiver: Request to queue");
                 }
             };
             System.out.println("QueryReceiver: Waiting for WWW requests to arrive");
             // Start waiting for messages in the RabbitMQ queue
             // TODO
-            channel.basicConsume(RABBIT_QUEUE_NAME, true, consumer);
+
+	    channel.basicConsume(RABBIT_QUEUE_NAME, true, consumer);
 
         } catch (Exception e) { // No exception handling, simply abort
             e.printStackTrace();
@@ -106,11 +113,11 @@ class QueryReceiver extends Thread {
 class Worker extends Thread {
 
     private ArrayBlockingQueue<String> queue; // Blocking queue to communicate with QueryReceiver thread
-    private FileSystemActions fsa; // Object to perform actions on files and folders
-    private String droot; // Root directory from which download requests will be served
-    private String log_file; // Name of the log file
+    private FileSystemActions fsa;           // Object to perform actions on files and folders
+    private String droot;                    // Root directory from which download requests will be served
+    private String log_file;                 // Name of the log file
 
-    // The constructor receives a reference to the blocking queue
+    // The constructor receives a reference to the blocking queue 
     // and the server configuration parameters
 
     public Worker(ArrayBlockingQueue<String> queue, String droot, String log_filename) {
@@ -129,7 +136,8 @@ class Worker extends Thread {
             while (true) { // Infinite loop
                 // Wait for request in the blocking queue
                 // TODO
-                request = queue.take();
+
+		    request = queue.take();
 
                 // Process query by splitting its fields by the space character " "
                 String parts[] = request.split(" ");
@@ -139,30 +147,39 @@ class Worker extends Thread {
                 } else {
                     try {
 
-                        // Locate the RMI client to which the response must be returned.
+                        // Locate the RMI client to which the response must be returned. 
                         // Its name is in the first part of the message received from the queue.
                         // TODO
-                        ClientInterface obj = (ClientInterface) Naming.lookup(parts[0]);
 
-                        if (parts[1].equals("EXISTFILE")) {
+			    ClientInterface obj = (ClientInterface) Naming.lookup(parts[0]);
+
+                        if (parts[1].equals("EXISTFILE"))
+                        {
                             // Check if the file exists
                             if (fsa.fileExists(droot + "/" + parts[2])) {
                                 // TODO
-                                obj.setExistFile(true);
+                               
+				    obj.setExistFile(true);
+
                             } else {
                                 // TODO
-                                obj.setExistFile(false);
+                                
+				    obj.setExistFile(false);
+
                             }
                         } else if (parts[1].equals("GETSIZE")) {
                             // Get the file size
                             // TODO
-                            obj.setGetSize(fsa.getFileSize(droot + "/" + parts[2]));
+                            
+				obj.setGetSize(fsa.getFileSize(droot + "/" + parts[2]));
 
                         } else if (parts[1].equals("GETCHUNK")) {
                             long offset = Long.parseLong(parts[3]);
                             int length = Integer.parseInt(parts[4]);
                             // TODO
-                            obj.setGetChunk(fsa.getChunk(droot + "/" + parts[2], offset, length));
+                        
+			    obj.setGetChunk(fsa.getChunk(droot + "/" + parts[2], offset, length));
+
                         }
                     } catch (Exception e) {
                         // Any exception is simply printed
@@ -176,10 +193,13 @@ class Worker extends Thread {
                         String log_line;
                         // Prepare the line to be written
                         // TODO
-                        if (parts.length < 4)
-                            log_line = date.toString() + ", " + parts[0] + parts[1] + parts[2];
-                        else
-                            log_line = date.toString() + ", " + parts[0] + parts[1] + parts[2] + parts[3] + parts[4];
+                        
+			if (parts.length < 4) {
+				log_line = date.toString() + ", " + parts[0] + parts[1] + parts[2];
+			}
+			else {
+				log_line = date.toString() + ", " + parts[0] + parts[1] + parts[2] + parts[3] + parts[4];
+			}
 
                         BufferedWriter bw = new BufferedWriter(new FileWriter(log_file, true));
                         bw.write(log_line + System.lineSeparator());
@@ -203,14 +223,13 @@ public class SrvWWW {
     public static void main(String[] argv) throws Exception {
 
         String log_filename = null; // To register the processed queries
-        FileSystemActions fsa = new FileSystemActions();
+        FileSystemActions fsa = new FileSystemActions();   
 
         // The values of these variables are read from the command line
         int queue_size = 0; // Size of the array blocking queue
         int num_workers = 0; // Number of worker threads
 
-        // Internal synchronization queue between the QueryReceiver thread and the
-        // Workers
+        // Internal synchronization queue between the QueryReceiver thread and the Workers
         ArrayBlockingQueue<String> internal_queue;
 
         // Variable representing the event receiver thread
@@ -249,15 +268,17 @@ public class SrvWWW {
 
         // First, the internal synchronization queue between threads is created
         // TODO
-        internal_queue = new ArrayBlockingQueue<String>(queue_size);
+    
+	internal_queue = new ArrayBlockingQueue<String>(queue_size);
 
         // Create the Worker threads and start them
         workers = new Worker[num_workers];
         // TODO
-        for (Worker worker : workers) {
-            worker = new Worker(internal_queue, argv[2], log_filename);
-            worker.start();
-        }
+       
+	for (Worker worker : workers) {
+		worker = new Worker(internal_queue, argv[2], log_filename);
+		worker.start();
+	}
 
         // Create the query receiver thread and start it
         query_receiver = new QueryReceiver(internal_queue);
